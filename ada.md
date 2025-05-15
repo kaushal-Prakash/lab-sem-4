@@ -82,19 +82,19 @@ On average, due to recursive function call stack (for in-place implementation).
 #### **Time Complexity**
 
 - **Best Case:**  
-  $$
-  O(n \log n)
-  $$
+$$
+O(n \log n)
+$$
 
 - **Average Case:**  
-  $$
-  O(n \log n)
-  $$
+$$
+O(n \log n)
+$$
 
 - **Worst Case (already sorted or all equal):**  
-  $$
-  O(n^2)
-  $$
+$$
+O(n^2)
+$$
 
 #### **Code**
 ```c
