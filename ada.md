@@ -255,3 +255,140 @@ int main() {
     return 0;
 }
 ```
+## 4. Topological Sorting 
+It is a sorting algorithm for directed acyclic graph(DAG). It linearly orders the vertices such that for every directed edge
+$$
+u -> v
+$$
+u comes before v in the ordering.
+
+### **Technique**
+we use a **queue** initialized with a start vertex (like 0) and an **indegree array**. We remove a node from queue (using dequeue method), add it to result (array) and get its neighbours, then we traverse through them and decrease their indegree by one & if its zero we add them back to queue.
+
+### **Applications**
+Arranging course structure of college.
+
+### **Time Complexity**
+$$
+O(V + E)
+$$
+for all cases.
+
+### **Space Complexity**
+$$
+O(V)
+$$
+to store the resultant array
+
+### **Code**
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+// Adjacency list node
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Queue structure
+typedef struct {
+    int items[MAX];
+    int front, rear;
+} Queue;
+
+Queue* createQueue() {
+    Queue* q = malloc(sizeof(Queue));
+    q->front = -1;
+    q->rear = -1;
+    return q;
+}
+
+int isEmpty(Queue* q) {
+    return q->front == -1;
+}
+
+void enqueue(Queue* q, int value) {
+    if (q->rear == MAX - 1) return;
+    if (isEmpty(q)) q->front = 0;
+    q->items[++q->rear] = value;
+}
+
+int dequeue(Queue* q) {
+    if (isEmpty(q)) return -1;
+    int item = q->items[q->front];
+    if (q->front == q->rear)
+        q->front = q->rear = -1;
+    else
+        q->front++;
+    return item;
+}
+
+// Graph structure
+Node* adj[MAX];
+int indegree[MAX];
+
+void addEdge(int u, int v) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = adj[u];
+    adj[u] = newNode;
+}
+
+void topologicalSort(int V) {
+    Queue* q = createQueue();
+
+    // Enqueue all vertices with indegree 0
+    for (int i = 0; i < V; i++) {
+        if (indegree[i] == 0)
+            enqueue(q, i);
+    }
+
+    int count = 0;
+    int result[MAX];
+
+    while (!isEmpty(q)) {
+        int node = dequeue(q);
+        result[count++] = node;
+
+        for (Node* temp = adj[node]; temp != NULL; temp = temp->next) {
+            indegree[temp->vertex]--;
+            if (indegree[temp->vertex] == 0)
+                enqueue(q, temp->vertex);
+        }
+    }
+
+    if (count != V) {
+        printf("Cycle detected! Topological sort not possible.\n");
+    } else {
+        printf("Topological Order: ");
+        for (int i = 0; i < count; i++)
+            printf("%d ", result[i]);
+        printf("\n");
+    }
+}
+
+int main() {
+    int V = 6; // Number of vertices
+
+    // Initialize adjacency list and indegree array
+    for (int i = 0; i < V; i++) {
+        adj[i] = NULL;
+        indegree[i] = 0;
+    }
+
+    // Add edges and update indegree
+    addEdge(0, 1); indegree[1]++;
+    addEdge(0, 2); indegree[2]++;
+    addEdge(1, 3); indegree[3]++;
+    addEdge(2, 3); indegree[3]++;
+    addEdge(3, 4); indegree[4]++;
+    addEdge(4, 5); indegree[5]++;
+
+    topologicalSort(V);
+
+    return 0;
+}
+```
