@@ -5,7 +5,7 @@
 ### Comparison-based Sorting Algorithm
 
 #### **Technique**
-Selection Sort is a comparison-based sorting algorithm. It sorts an array by repeatedly selecting the minimum (or maximum) element from the unsorted region and swapping it with the first element of the unsorted region.
+- Selection Sort is a comparison-based sorting algorithm. It sorts an array by repeatedly selecting the minimum (or maximum) element from the unsorted region and swapping it with the first element of the unsorted region.
 
 #### **Space Complexity**
 
@@ -69,7 +69,7 @@ int main() {
 ### A Divide and Conquer Algorithm
 
 #### **Technique**
-Quick Sort is a divide and conquer algorithm. It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, according to whether they are less than or greater than the pivot. The sub-arrays are then sorted recursively.
+- Quick Sort is a divide and conquer algorithm. It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, according to whether they are less than or greater than the pivot. The sub-arrays are then sorted recursively.
 
 #### **Space Complexity**
 
@@ -161,7 +161,7 @@ Still have a doubt ? [Click here](https://www.youtube.com/watch?v=WIrA4YexLRQ&t=
 ### A Divide and Conquer Algorithm
 
 #### **Technique**
-Merge Sort is a classic divide and conquer sorting algorithm. It works by recursively splitting the array into halves until each sub-array has one element, and then merging the sorted sub-arrays back together.
+- Merge Sort is a classic divide and conquer sorting algorithm. It works by recursively splitting the array into halves until each sub-array has one element, and then merging the sorted sub-arrays back together.
 
 #### **Space Complexity**
 
@@ -256,17 +256,17 @@ int main() {
 }
 ```
 ## 4. Topological Sorting 
-It is a sorting algorithm for directed acyclic graph(DAG). It linearly orders the vertices such that for every directed edge
+- It is a sorting algorithm for directed acyclic graph(DAG). It linearly orders the vertices such that for every directed edge
 $$
 u -> v
 $$
 u comes before v in the ordering.
 
 ### **Technique**
-we use a **queue** initialized with a start vertex (like 0) and an **indegree array**. We remove a node from queue (using dequeue method), add it to result (array) and get its neighbours, then we traverse through them and decrease their indegree by one & if its zero we add them back to queue.
+- we use a **queue** initialized with a start vertex (like 0) and an **indegree array**. We remove a node from queue (using dequeue method), add it to result (array) and get its neighbours, then we traverse through them and decrease their indegree by one & if its zero we add them back to queue.
 
 ### **Applications**
-Arranging course structure of college.
+- Arranging course structure of college.
 
 ### **Time Complexity**
 $$
@@ -392,3 +392,153 @@ int main() {
     return 0;
 }
 ```
+## 5. Warshall's Algorithm
+- Use to determine the transitive closure of graph.
+- For Unweighted and directed graph.
+- **Transitive Closure** - a matrix that tells if there is a path between nodes/vertices or not.
+  
+### **Technique**
+- First we initialize the adjacency matrix of graph indicating whether there is a direct edge between the vertices.
+- We pick vertices one by one & update the matrix by considering all vertices as intermidiate vertices.
+- Formula being used :
+```
+A[i][j] = A[i][j] || (A[i][k] && A[k][j]);
+```
+### **Time Complexity**
+$$
+O(V^3)
+$$
+For all cases, if using adjacency matrix.
+
+### **Space Complexity**
+$$
+O(V^3)
+$$
+for adjacency matrix.
+where V is the number of vertices
+
+### **Code**
+```c
+#include <stdio.h>
+#define MAX 10
+
+void warshall(int graph[MAX][MAX], int V) {
+    int reach[MAX][MAX];
+
+    // Initialize reachability matrix with the original graph
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            reach[i][j] = graph[i][j];
+        }
+    }
+
+    // Warshall's Algorithm
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                reach[i][j] = reach[i][j] || (reach[i][k] && reach[k][j]);
+            }
+        }
+    }
+
+    // Print the transitive closure
+    printf("Transitive Closure of the graph:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            printf("%d ", reach[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int V = 4;
+    int graph[MAX][MAX] = {
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
+        {1, 0, 0, 1},
+        {0, 0, 0, 1}
+    };
+
+    warshall(graph, V);
+
+    return 0;
+}
+```
+## 6. Floyd-Warshall
+- Used to find shortes path between all pair of vertices.
+- For weighted directed graph.
+
+### **Technique Used**
+- We use an 2D mattrix to store shortest distance between the vertices.
+- And we iteratively update the shortest path by considering each node as intermediate.
+
+### **Time Complexity**
+$$
+O(V^3)
+$$
+for all cases.
+ V is the number of vertices.
+
+### **Space Complexity**
+$$
+O(V^3)
+$$
+to store distance matrix.
+
+### **Code**
+```c
+#include <stdio.h>
+
+#define INF 99999  // A large value representing infinity
+#define MAX 10
+
+void floydWarshall(int graph[MAX][MAX], int V) {
+    int dist[MAX][MAX];
+
+    // Initialize the distance matrix with the input graph
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
+        }
+    }
+
+    // Floyd-Warshall algorithm
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+
+    // Print the shortest distance matrix
+    printf("Shortest distances between every pair of vertices:\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF)
+                printf("INF ");
+            else
+                printf("%3d ", dist[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int V = 4;
+    int graph[MAX][MAX] = {
+        {0,   3,   INF, 5},
+        {2,   0,   INF, 4},
+        {INF, 1,   0,   INF},
+        {INF, INF, 2,   0}
+    };
+
+    floydWarshall(graph, V);
+
+    return 0;
+}
+```
+
+
