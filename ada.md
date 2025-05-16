@@ -541,4 +541,69 @@ int main() {
 }
 ```
 
+## 7. 0/1 Knapsack Problem
+- This is an optimization problem where we try to fit items with given value and weights into knapsack with limited capacity, maximizing the total value.
 
+### **Technique Used**
+- Recurrsion + memoization
+  
+### **Time Complexity**
+$$
+O(n^2)
+$$
+for all cases, since we will try every posible combination of items no matter what.
+
+### **Space Complexity**
+$$
+O(n^2)
+$$
+for memoization table.
+
+### **Code**
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ITEMS 100
+#define MAX_CAPACITY 1000
+
+int dp[MAX_ITEMS][MAX_CAPACITY];  // Memoization table
+
+int knapsack(int index, int W, int wt[], int val[], int n) {
+    // Base case: if we have no items or capacity
+    if (index == 0) {
+        if (wt[0] <= W)
+            return val[0];
+        else
+            return 0;
+    }
+
+    // Return if already computed
+    if (dp[index][W] != -1)
+        return dp[index][W];
+
+    int notPick = knapsack(index - 1, W, wt, val, n);
+
+    int pick = 0;
+    if (wt[index] <= W)
+        pick = val[index] + knapsack(index - 1, W - wt[index], wt, val, n);
+
+    dp[index][W] = (pick > notPick) ? pick : notPick;
+    return dp[index][W];
+}
+
+int main() {
+    int wt[] = {2, 3, 4, 5};
+    int val[] = {3, 4, 5, 6};
+    int n = sizeof(wt) / sizeof(wt[0]);
+    int W = 5;
+
+    // Initialize dp array with -1
+    memset(dp, -1, sizeof(dp));
+
+    int maxProfit = knapsack(n - 1, W, wt, val, n);
+    printf("Maximum profit: %d\n", maxProfit);
+
+    return 0;
+}
+```
