@@ -681,3 +681,166 @@ int main() {
     dijkstra(graph, 0);
     return 0;
 }
+```
+
+## 9. Kruskal's Algorithm
+- Finds a minimum spanning tree (MST) using a greedy approach by sorting edges.
+
+### **Technique Used**
+- Disjoint Set Union (DSU), Greedy sorting of edges.
+
+### **Time Complexity**
+$$
+O(E \log E)
+$$ 
+due to edge sorting.
+
+### **Space Complexity**
+$$
+O(V)
+$$ 
+for parent array.
+
+### **Code**
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int parent[MAX];
+
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+
+void unionSets(int i, int j) {
+    int a = find(i);
+    int b = find(j);
+    parent[a] = b;
+}
+
+void kruskal(int n, int cost[MAX][MAX]) {
+    int minCost = 0;
+    for (int i = 0; i < n; i++)
+        parent[i] = i;
+
+    int edges = 0;
+    while (edges < n - 1) {
+        int min = 99999, a = -1, b = -1;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (find(i) != find(j) && cost[i][j] < min) {
+                    min = cost[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+
+        unionSets(a, b);
+        printf("Edge %d: (%d, %d) cost: %d\n", edges + 1, a, b, min);
+        minCost += min;
+        edges++;
+    }
+
+    printf("Minimum cost = %d\n", minCost);
+}
+
+int main() {
+    int cost[MAX][MAX] = {
+        {999, 2, 999, 6, 999},
+        {2, 999, 3, 8, 5},
+        {999, 3, 999, 999, 7},
+        {6, 8, 999, 999, 9},
+        {999, 5, 7, 9, 999}
+    };
+    kruskal(5, cost);
+    return 0;
+}
+```
+
+## 10. Prim's Algorithm
+- Finds the minimum spanning tree (MST) for a connected weighted undirected graph using a greedy approach.
+
+### **Technique Used**
+- Greedy algorithm with adjacency matrix and key/visited arrays.
+
+### **Time Complexity**
+$$
+O(V^2)
+$$ 
+when using an adjacency matrix.
+
+### **Space Complexity**
+$$
+O(V)
+$$ 
+for key and visited arrays.
+
+### **Code**
+```c
+#include <stdio.h>
+#include <limits.h>
+
+#define V 5
+
+int minKey(int key[], int mstSet[]) {
+    int min = INT_MAX, min_index;
+
+    for (int v = 0; v < V; v++)
+        if (mstSet[v] == 0 && key[v] < min)
+            min = key[v], min_index = v;
+
+    return min_index;
+}
+
+void printMST(int parent[], int graph[V][V]) {
+    int totalCost = 0;
+    printf("Edge \tWeight\n");
+    for (int i = 1; i < V; i++) {
+        printf("%d - %d \t%d\n", parent[i], i, graph[i][parent[i]]);
+        totalCost += graph[i][parent[i]];
+    }
+    printf("Total cost: %d\n", totalCost);
+}
+
+void primMST(int graph[V][V]) {
+    int parent[V];
+    int key[V];
+    int mstSet[V];
+
+    for (int i = 0; i < V; i++)
+        key[i] = INT_MAX, mstSet[i] = 0;
+
+    key[0] = 0;
+    parent[0] = -1;
+
+    for (int count = 0; count < V - 1; count++) {
+        int u = minKey(key, mstSet);
+        mstSet[u] = 1;
+
+        for (int v = 0; v < V; v++)
+            if (graph[u][v] && mstSet[v] == 0 && graph[u][v] < key[v])
+                parent[v] = u, key[v] = graph[u][v];
+    }
+
+    printMST(parent, graph);
+}
+
+int main() {
+    int graph[V][V] = {
+        {0, 2, 0, 6, 0},
+        {2, 0, 3, 8, 5},
+        {0, 3, 0, 0, 7},
+        {6, 8, 0, 0, 9},
+        {0, 5, 7, 9, 0}
+    };
+
+    primMST(graph);
+    return 0;
+}
+```
