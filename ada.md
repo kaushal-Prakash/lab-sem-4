@@ -503,7 +503,7 @@ For all cases, if using adjacency matrix.
 
 ### **Space Complexity**
 $$
-O(V^3)
+O(V^2)
 $$
 for adjacency matrix.
 where V is the number of vertices
