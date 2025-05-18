@@ -26,12 +26,15 @@ For all cases, since comparisons are always performed, even if the array is alre
 #### **Code**
 ```c
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void sort(int arr[], int n) {
     for (int i = 0; i < n; i++) {
         int min = i;
         for (int j = i + 1; j < n; j++) {
-            if (arr[j] < arr[min]) min = j;
+            if (arr[j] < arr[min])
+                min = j;
         }
 
         if (min != i) {
@@ -40,29 +43,56 @@ void sort(int arr[], int n) {
             arr[min] = temp;
         }
     }
+}
 
-    // Print sorted array
+int main() {
+    int n;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    int* arr = (int*)malloc(n * sizeof(int));
+    if (arr == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    // Seed random number generator
+    srand(time(NULL));
+
+    // Fill array with random numbers
+    printf("Original array:\n");
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000; // random number between 0 and 999
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // Record start time
+    clock_t start = clock();
+
+    // Sort the array
+    sort(arr, n);
+
+    // Record end time
+    clock_t end = clock();
+
+    // Calculate elapsed time in milliseconds
+    double time_taken = ((double)(end - start) * 1000.0) / CLOCKS_PER_SEC;
+
     printf("Sorted array using Selection Sort:\n");
     for (int i = 0; i < n; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
-}
 
-int main() {
-    int arr[] = {64, 25, 12, 22, 11};
-    int n = sizeof(arr) / sizeof(arr[0]);
+    printf("Time taken: %.3f ms\n", time_taken);
 
-    printf("Original array:\n");
-    for (int i = 0; i < n; i++) {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-
-    sort(arr, n);
+    free(arr);
 
     return 0;
 }
+
 ```
 ## 2. Quick Sort
 
@@ -99,6 +129,8 @@ $$
 #### **Code**
 ```c
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 // Function to swap two elements
 void swap(int* a, int* b) {
@@ -109,7 +141,7 @@ void swap(int* a, int* b) {
 
 // Partition function
 int partition(int arr[], int low, int high) {
-    int pivot = arr[high]; // Choosing the last element as pivot
+    int pivot = arr[high]; // Pivot is the last element
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
@@ -123,16 +155,17 @@ int partition(int arr[], int low, int high) {
     return i + 1;
 }
 
+// QuickSort algorithm
 void quickSort(int arr[], int low, int high) {
     if (low < high) {
         int pi = partition(arr, low, high);
 
-        // Recursively sort elements before and after partition
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
 }
 
+// Print array
 void printArray(int arr[], int n) {
     for (int i = 0; i < n; i++)
         printf("%d ", arr[i]);
@@ -140,19 +173,47 @@ void printArray(int arr[], int n) {
 }
 
 int main() {
-    int arr[] = { 10, 7, 8, 9, 1, 5 };
-    int n = sizeof(arr) / sizeof(arr[0]);
+    int n;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    // Dynamic array allocation
+    int* arr = (int*)malloc(n * sizeof(int));
+    if (arr == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    // Seed RNG and generate random values
+    srand(time(NULL));
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000; // numbers from 0 to 999
+    }
 
     printf("Original array:\n");
     printArray(arr, n);
 
+    // Start timing
+    clock_t start = clock();
+
+    // Sort using quicksort
     quickSort(arr, 0, n - 1);
+
+    // End timing
+    clock_t end = clock();
+    double time_taken = ((double)(end - start) * 1000.0) / CLOCKS_PER_SEC;
 
     printf("Sorted array using Quick Sort:\n");
     printArray(arr, n);
 
+    printf("Time taken: %.3f ms\n", time_taken);
+
+    // Free memory
+    free(arr);
+
     return 0;
 }
+
 ```
 Still have a doubt ? [Click here](https://www.youtube.com/watch?v=WIrA4YexLRQ&t=1943s)
 
@@ -191,13 +252,16 @@ $$
 #### **Code**
 ```c
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 // Function to merge two sorted halves
 void merge(int arr[], int l, int m, int r) {
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    int L[n1], R[n2];
+    int* L = (int*)malloc(n1 * sizeof(int));
+    int* R = (int*)malloc(n2 * sizeof(int));
 
     // Copy data to temp arrays
     for (int i = 0; i < n1; i++)
@@ -209,11 +273,10 @@ void merge(int arr[], int l, int m, int r) {
     int i = 0, j = 0, k = l;
 
     while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
+        if (L[i] <= R[j])
             arr[k++] = L[i++];
-        } else {
+        else
             arr[k++] = R[j++];
-        }
     }
 
     // Copy remaining elements
@@ -221,6 +284,9 @@ void merge(int arr[], int l, int m, int r) {
         arr[k++] = L[i++];
     while (j < n2)
         arr[k++] = R[j++];
+
+    free(L);
+    free(R);
 }
 
 void mergeSort(int arr[], int l, int r) {
@@ -241,19 +307,44 @@ void printArray(int arr[], int n) {
 }
 
 int main() {
-    int arr[] = {12, 11, 13, 5, 6, 7};
-    int n = sizeof(arr) / sizeof(arr[0]);
+    int n;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    // Allocate memory
+    int* arr = (int*)malloc(n * sizeof(int));
+    if (!arr) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    // Seed random generator and fill array
+    srand(time(NULL));
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000; // Random numbers [0, 999]
+    }
 
     printf("Original array:\n");
     printArray(arr, n);
 
+    // Time the sorting
+    clock_t start = clock();
+
     mergeSort(arr, 0, n - 1);
+
+    clock_t end = clock();
+    double time_taken = ((double)(end - start) * 1000.0) / CLOCKS_PER_SEC;
 
     printf("Sorted array using Merge Sort:\n");
     printArray(arr, n);
 
+    printf("Time taken: %.3f ms\n", time_taken);
+
+    free(arr);
     return 0;
 }
+
 ```
 ## 4. Topological Sorting 
 - It is a sorting algorithm for directed acyclic graph(DAG). It linearly orders the vertices such that for every directed edge
