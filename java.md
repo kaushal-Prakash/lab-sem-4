@@ -237,89 +237,73 @@ import java.awt.*;
 import java.awt.event.*;
 
 class KeyEventDemoAWTNoExtend {
-
     public static void main(String[] args) {
-        // Create Frame
-        Frame frame = new Frame("Key Event Demo");
-        frame.setSize(400, 300);
-        frame.setLayout(new GridLayout(4, 2, 10, 10));
-
-        // Create components
-        Label lblChar = new Label("Character:");
-        TextField charField = new TextField();
-        charField.setEditable(false);
-
-        Label lblCode = new Label("Key Code:");
-        TextField codeField = new TextField();
-        codeField.setEditable(false);
-
-        Label lblModifier = new Label("Modifier Key:");
-        TextField modifierField = new TextField();
-        modifierField.setEditable(false);
-
-        Label lblAction = new Label("Action Key:");
-        TextField actionField = new TextField();
-        actionField.setEditable(false);
-
-        // Add components to frame
-        frame.add(lblChar);
-        frame.add(charField);
-        frame.add(lblCode);
-        frame.add(codeField);
-        frame.add(lblModifier);
-        frame.add(modifierField);
-        frame.add(lblAction);
-        frame.add(actionField);
-
-        // Add KeyListener to frame
-        frame.addKeyListener(new KeyListener() {
+        Frame f = new Frame("Key Listener");
+        f.setSize(400,300);
+        f.addWindowListener(new WindowAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                char ch = e.getKeyChar();
-                int code = e.getKeyCode();
-                boolean isModifier = e.isShiftDown() || e.isControlDown() || e.isAltDown();
-                boolean isAction = e.isActionKey();
-
-                // Update text fields
-                charField.setText(String.valueOf(ch));
-                codeField.setText(String.valueOf(code));
-                modifierField.setText(isModifier ? "Yes" : "No");
-                actionField.setText(isAction ? "Yes" : "No");
-
-                // Set color based on key pressed
-                Color color;
-                switch (Character.toUpperCase(ch)) {
-                    case 'A': color = Color.RED; break;
-                    case 'S': color = Color.GREEN; break;
-                    case 'D': color = Color.BLUE; break;
-                    case 'W': color = Color.ORANGE; break;
-                    default: color = Color.BLACK; break;
-                }
-
-                charField.setForeground(color);
-                codeField.setForeground(color);
-                modifierField.setForeground(color);
-                actionField.setForeground(color);
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {}
-
-            @Override
-            public void keyTyped(KeyEvent e) {}
-        });
-
-        // Window close handler
-        frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                frame.dispose();
+                f.dispose();
                 System.exit(0);
             }
         });
 
-        frame.setVisible(true);
-        // Important: set focus to frame to receive key events
-        frame.requestFocus();
+        Label key = new Label("Key : ");
+        Label code = new Label("Key Code : ");
+        Label action = new Label("Action key : ");
+        Label modi = new Label("Modifier Key : ");
+
+        TextField keyT = new TextField();
+        keyT.setEditable(false);
+        TextField codeT = new TextField();
+        codeT.setEditable(false);
+        TextField actionT = new TextField();
+        actionT.setEditable(false);
+        TextField modiT = new TextField();
+        modiT.setEditable(false);
+
+        f.setLayout(new GridLayout(4,2,10,10));
+        f.add(key);
+        f.add(keyT);
+        f.add(code);
+        f.add(codeT);
+        f.add(action);
+        f.add(actionT);
+        f.add(modi);
+        f.add(modiT);
+
+        f.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                char ch = e.getKeyChar();
+                int cod = e.getKeyCode();
+                boolean isAction = e.isActionKey();
+                boolean isModi = e.isShiftDown() || e.isControlDown() ||
+                        e.isAltDown();
+                keyT.setText(String.valueOf(ch));
+                codeT.setText(String.valueOf(cod));
+                actionT.setText(isAction
+                ? "true" : "false");
+                modiT.setText(isModi? "true" : "false");
+
+                Color color;
+                switch (Character.toUpperCase(ch)){
+                    case 'A': color = Color.RED;break;
+                    case 'S': color = Color.GREEN;break;
+                    case 'D': color = Color.ORANGE;break;
+                    case 'M': color = Color.BLUE;break;
+                    default: color = Color.BLACK;break;
+                }
+                keyT.setForeground(color);
+                codeT.setForeground(color);
+                actionT.setForeground(color);
+                modiT.setForeground(color);
+            }
+
+        });
+
+        f.setVisible(true);
+        f.requestFocus();
     }
 }
 ```
@@ -473,84 +457,63 @@ A filled rectangle, oval, and a line.
 import java.awt.*;
 import java.awt.event.*;
 
-class AWTCanvasExample {
+class CanvasDemo {
     public static void main(String[] args) {
-        // Create Frame
-        Frame frame = new Frame("Canvas Drawing Example");
+        final boolean[] red = {true};
+        Frame f = new Frame("Canvas Mouse Demo");
+        f.setSize(400, 300);
+        f.setLayout(new BorderLayout());
 
-        // Create Canvas
-        Canvas canvas = new Canvas() {
-            private int mouseX = 0, mouseY = 0;
-            private Color shapeColor = Color.RED;
+        Canvas c = new Canvas() {
+            int x, y;
 
             {
-                // Add mouse motion listener inside instance initializer
                 addMouseMotionListener(new MouseMotionAdapter() {
+                    @Override
                     public void mouseMoved(MouseEvent e) {
-                        mouseX = e.getX();
-                        mouseY = e.getY();
+                        x = e.getX();
+                        y = e.getY();
                         repaint();
                     }
                 });
             }
 
-            // Add method to change color
-            public void setShapeColor(Color newColor) {
-                shapeColor = newColor;
-                repaint();
-            }
-
+            @Override
             public void paint(Graphics g) {
-                g.setColor(shapeColor);
-                g.fillRect(50, 50, 100, 60);      // Rectangle
-                g.fillOval(180, 50, 100, 60);     // Oval
-                g.drawLine(50, 150, 250, 150);    // Line
-
-                g.setColor(Color.BLACK);
-                g.drawString("Mouse: (" + mouseX + ", " + mouseY + ")", 50, 220);
+                Color color = red[0] ? Color.RED : Color.BLUE;
+                g.setColor(color);
+                g.fillRect(50, 50, 100, 50);
+                g.setColor(color);
+                g.fillOval(200, 50, 80, 50);
+                g.setColor(color);
+                g.drawLine(50, 150, 250, 150);
+                g.drawString("Mouse at: (" + x + ", " + y + ")", 10, 200);
             }
         };
 
-        canvas.setSize(350, 250);
-        canvas.setBackground(Color.WHITE);
+        f.add(c,BorderLayout.CENTER);
 
-        // Create button to change color
         Button btn = new Button("Change Color");
-
-        // Add ActionListener to button
         btn.addActionListener(new ActionListener() {
-            private boolean toggle = true;
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                Color newColor = toggle ? Color.BLUE : Color.RED;
-                // Call setShapeColor through casting since it's anonymous subclass
-                ((Canvas) canvas).setForeground(newColor); // Optional: set text color
-                try {
-                    canvas.getClass().getMethod("setShapeColor", Color.class)
-                            .invoke(canvas, newColor);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                toggle = !toggle;
+                red[0] = !red[0];
+                c.repaint();
             }
         });
 
-        // Layout and add components
-        frame.setLayout(new BorderLayout());
-        frame.add(canvas, BorderLayout.CENTER);
-        frame.add(btn, BorderLayout.SOUTH);
+        f.add(btn,BorderLayout.SOUTH);
 
-        frame.setSize(400, 350);
-        frame.setVisible(true);
-
-        // Handle window close
-        frame.addWindowListener(new WindowAdapter() {
+        f.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                frame.dispose();
+                f.dispose();
+                System.exit(0);
             }
         });
+        f.setVisible(true);
     }
 }
+
 ```
 ## 12. simple calculator implemented in both AWT and Swing for addition, subtraction, multiplication, and division.
 
