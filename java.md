@@ -67,7 +67,7 @@ class LoginAuth {
 }
 ```
 ## 3. . Implement a java program to demonstrate creation of ArrayList, adding elements, removing elements, sorting elements of ArrayList. 
-```
+```java
 import java.util.ArrayList;
 import java.util.Collections;
 
